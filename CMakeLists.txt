@@ -112,7 +112,7 @@ else()
     )
 endif()
 
-set(ALSOFT_STATIC_CXX_RUNTIME ON)
+set(ALSOFT_STATIC_CXX_RUNTIME OFF)
 
 # Disable MSVC import .lib generation on MinGW (fixes the missing OpenAL32.def sed error)
 set(ALSOFT_BUILD_IMPORT_LIB OFF CACHE BOOL "Build an import .lib using dlltool" FORCE)
@@ -127,8 +127,8 @@ CPMAddPackage(
         "ALSOFT_UTILS OFF"
         "LIBTYPE ${AL_LIBTYPE}"
         "ALSOFT_ENABLE_MODULES OFF"
-        "ALSOFT_STATIC_STDCXX ${ALSOFT_STATIC_CXX_RUNTIME}"
-        "ALSOFT_STATIC_LIBGCC ${ALSOFT_STATIC_CXX_RUNTIME}"
+        "ALSOFT_STATIC_STDCXX OFF"
+        "ALSOFT_STATIC_LIBGCC OFF"
 )
 
 # TODO: Clear this paths with *
