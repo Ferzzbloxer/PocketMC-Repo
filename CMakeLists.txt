@@ -28,10 +28,8 @@ if (${PLATFORM} STREQUAL "Desktop")
 
     if (MINGW)
         if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-            # Statically link libc++ and libunwind for LLVM/Clang
             set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
         else()
-            # Statically link libstdc++ and libgcc for GCC
             set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libstdc++ -static-libgcc")
         endif()
     endif()
@@ -62,7 +60,6 @@ elseif (${PLATFORM} STREQUAL "Web")
     set(EXTRA_LIBS "idbfs.js")
 endif()
 
-# I totally shocked
 if(${PLATFORM} MATCHES "Web")
     set(PNG_LIB png)
     set(AL_LIBTYPE "STATIC")
@@ -84,7 +81,7 @@ if(${PLATFORM} MATCHES "Web")
     )
 else()
     set(PNG_LIB png_shared)
-    set(AL_LIBTYPE "SHARED")
+    set(AL_LIBTYPE "STATIC")
 
     CPMAddPackage(
         NAME "zlib"
@@ -115,11 +112,7 @@ else()
     )
 endif()
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(ALSOFT_STATIC_CXX_RUNTIME OFF)
-else()
-    set(ALSOFT_STATIC_CXX_RUNTIME ON)
-endif()
+set(ALSOFT_STATIC_CXX_RUNTIME ON)
 
 # Disable MSVC import .lib generation on MinGW (fixes the missing OpenAL32.def sed error)
 set(ALSOFT_BUILD_IMPORT_LIB OFF CACHE BOOL "Build an import .lib using dlltool" FORCE)
@@ -264,7 +257,6 @@ file(GLOB CLIENT_SOURCES
     "${PROJECT_ROOT}/src/client/gui/panoramas/*.cpp"
     "${PROJECT_ROOT}/src/client/gui/screens/crafting/*.cpp"
     "${PROJECT_ROOT}/src/client/gui/screens/touch/*.cpp"
-    # Added SkindexScreen
 
     "${PROJECT_ROOT}/src/client/model/*.cpp"
     "${PROJECT_ROOT}/src/client/model/geom/*.cpp"
@@ -347,7 +339,7 @@ file(GLOB CLIENT_SOURCES
 )
 list(REMOVE_ITEM CLIENT_SOURCES "${PROJECT_ROOT}/src/world/level/tile/OreFeature.cpp")
 
-# Ensure extra source files we add manually get compiled (helps when CMake wasn't re-run after adding files)
+# Ensure extra source files we add manually get compiled
 list(APPEND SERVER_SOURCES "src/world/item/crafting/ExtraRecipes.cpp")
 list(APPEND CLIENT_SOURCES "src/world/item/crafting/ExtraRecipes.cpp")
 list(APPEND SERVER_SOURCES "src/world/item/crafting/StonecutterRecipe.cpp")
@@ -392,6 +384,7 @@ if(WIN32)
 endif()
 
 add_executable(${PROJECT_NAME} ${CLIENT_SOURCES})
+
 if (WIN32 AND MINGW)
     target_link_options(${PROJECT_NAME} PRIVATE -static)
 endif()
@@ -408,7 +401,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 if(${PLATFORM} MATCHES "Web")
     set(CMAKE_CXX_STANDARD 11)
-    # uuuh i hate it
     set(EM_FLAGS "-pthread -sUSE_PTHREADS=1 -sUSE_LIBPNG=1 -sSHARED_MEMORY=1")
     
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EM_FLAGS}")
@@ -488,4 +480,3 @@ endif()
 
 message(STATUS "Compiling with the flags:")
 message(STATUS "  PLATFORM=" ${PLATFORM_CPP})
- 
